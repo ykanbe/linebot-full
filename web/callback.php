@@ -66,13 +66,13 @@ if($type == "image"){
   if ($fp){
       if (flock($fp, LOCK_EX)){
           if (fwrite($fp,  $result ) === FALSE){
-              $filemessage = '画像の受け取りに失敗しました';
+              $filemessage = '（自動応答）画像の受け取りに失敗しました';
           }else{
-              $filemessage = '画像を受け取りました！';
+              $filemessage = '（自動応答）画像を受け取りました！';
           }
           flock($fp, LOCK_UN);
       }else{
-          $filemessage = '画像の受け取りに失敗しました';
+          $filemessage = '（自動応答）画像の受け取りに失敗しました';
       }
   }
   fclose($fp);
@@ -124,13 +124,13 @@ if($type == "image"){
           ],
           [
             "type" => "message",
-            "label" => "営業時間のご案内",
-            "text" => $massageshop."🌹の営業時間をおしえて"
+            "label" => "納期・配送状況について",
+            "text" => $massageshop."の納期・配送状況についておしえて"
           ],
           [
             "type" => "message",
-            "label" => "納期・配送状況について",
-            "text" => $massageshop."の納期・配送状況についておしえて"
+            "label" => "返品・交換・キャンセル",
+            "text" => $massageshop."の返品・交換・キャンセルをしたい"
           ],
           [
             "type" => "message",
@@ -144,7 +144,30 @@ if($type == "image"){
   $email->setSubject('['.$massagecat.']'.$messageId)
 		->setHtml('tags: '.$userId.'<br>'.$massage2.$massage0.$massageend);
   $sendgrid->send($email);
-} else if ((strpos($text,'の返品・交換・キャンセルをしたい') !== false)||(strpos($text,'のお支払いについて') !== false)||(strpos($text,'のお届け先変更方法が知りたい') !== false)||(strpos($text,'の領収書が欲しい') !== false)||(strpos($text,'の納期・配送状況についておしえて') !== false)) {
+} else if ((strpos($text,'のお支払いについて') !== false)||(strpos($text,'のお届け先変更方法が知りたい') !== false)||(strpos($text,'の領収書が欲しい') !== false)||(strpos($text,'の納期・配送状況についておしえて') !== false)) {
+  $response_format_text = [
+    "type" => "template",
+	"altText" => "購入履歴",
+    "template" => [
+      "type" => "buttons",
+	  "thumbnailImageUrl" => "https://" . $_SERVER['SERVER_NAME'] . "/img/rakuten01.png",
+	  "imageAspectRatio" => "square",
+	  "title" => "ショップ情報",
+      "text" => "お届け先の変更、領収書の発行につきましてはこちらからご連絡ください。",
+      "actions" => [
+          [
+            "type" => "uri",
+            "label" => "購入履歴を表示",
+            "uri" => "https://sp.order.my.rakuten.co.jp/?fidomy=1"
+          ]
+      ]
+    ]
+  ];
+  $massage0 = $text;
+  $email->setSubject('['.$massagecat.']'.$messageId)
+		->setHtml('tags: '.$userId.'<br>'.$massage2.$massage0.$massageend);
+  $sendgrid->send($email);
+} else if (strpos($text,'の返品・交換・キャンセルをしたい') !== false) {
   $massageurl = 'fullgrace';
   if($massagecat == '308072'){
 	  $massageurl = 'graceshop-2';
@@ -157,7 +180,7 @@ if($type == "image"){
 	  "thumbnailImageUrl" => "https://" . $_SERVER['SERVER_NAME'] . "/img/rakuten01.png",
 	  "imageAspectRatio" => "square",
 	  "title" => "ショップ情報",
-      "text" => "返品・交換やお届け先の変更、領収書の発行につきましてはこちらからご連絡ください。",
+      "text" => "返品・交換・キャンセルにつきましては、こちらからご連絡ください。",
       "actions" => [
           [
             "type" => "uri",
@@ -187,8 +210,8 @@ if($type == "image"){
       "actions" => [
           [
             "type" => "message",
-            "label" => "返品・交換・キャンセル",
-            "text" => $massageshop."の返品・交換・キャンセルをしたい"
+            "label" => "営業時間のご案内",
+            "text" => $massageshop."🌹の営業時間をおしえて"
           ],
           [
             "type" => "message",
@@ -257,8 +280,8 @@ if($type == "image"){
       ]
     ]
   ];
-  if ((strpos($text,'納期') !== false)||(strpos($text,'変更') !== false)){
-  //メール送信（納期、変更、住所）
+  if ((strpos($text,'納期') !== false)||(strpos($text,'納期') !== false)||(strpos($text,'返品') !== false)){
+  //メール送信（納期、変更、返品）
   $massage0 = $text;
   $email->setSubject($messageId)
 		->setHtml('tags: '.$userId.'<br>'.$massage2.$massage0.$massageend);
