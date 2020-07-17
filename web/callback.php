@@ -87,7 +87,7 @@ if($type == "image"){
 	$email->setSubject($messageId)
 		  ->setHtml('tags: '.$userId.'<br>'.$massage1.$filemessage.$massageend.$massage2.$massage0.$massageend.$imagetag);
 	$sendgrid->send($email);
-} else if (strpos($text,'🌹') !== false){
+} else if ((strpos($text,'🌹'))||(strpos($text,'クーポン')) !== false){
   exit;
 } else if (strpos($text,'購入予定です（') !== false) {
   $response_format_text = [
